@@ -1,0 +1,11 @@
+version: "3"
+services:
+  website:
+#    image: ubuntu:latest
+    image: nodejs/express
+    container_name: nodejs-website
+    tty: true    
+    volumes:
+      - ./project:/project
+
+
