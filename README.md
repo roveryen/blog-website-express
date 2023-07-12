@@ -1,15 +1,14 @@
 # About
-This is my python execrise with selenium and paramiko libraries. 
+This is my node.js execrise with node.js, ejs template, express framework, mongodb, mongodb-express. 
 With this execrice, I learned some knowledge that like:
 
-1. Build the docker image of selenium for arm64 architecture.
-2. Utilize the selenium library to imitate human behaviors and scraping the infomation that I need from multiple websites.
-3. Store the extracted infomation to json files.
-4. Upload the json files to sftp by utilizing paramiko library.
+1. Build the docker's image with pre-install node.js and express framework.
+2. Using dockers for mongodb and mongodb-express.
+3. Build a basic blog-website with express framework and mongodb.
 
 # Prerequisite
 
-1. build a docker image with nodejs and express framework
+1. build a docker's image with npm and express framework
 
    `docker build nodejs -t nodejs/express`
 
