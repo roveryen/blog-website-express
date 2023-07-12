@@ -1,0 +1,60 @@
+<%- include('../partials/header') -%>
+<div class="container">
+    <div class="col-lg-4 hidden-xs float-start">&nbsp;</div>
+    <div class="col-lg-4 col-xs-12 float-start text-center">
+        <form id="frm-sign-in">
+            <div class="card">
+                <div class="card-header">Sing In</div>
+                <div class="card-body">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Account</span>
+                        <input type="text" name="account" class="form-control" placeholder="account" value="" />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Password</span>
+                        <input type="password" name="password" class="form-control" value="" />
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <button type="button" class="btn btn-success btn-sm btn-submit">送出</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="clearfix"></div>
+</div>
+<script>
+let button = document.querySelector('.btn-submit');
+button.addEventListener('click', function(e){
+    e.preventDefault();
+    const frm = document.getElementById('frm-sign-in');
+    const formData = new FormData(frm);
+
+    let payload = {};
+    for (const [key, value] of formData) {
+        payload[key] = value;
+    }
+
+    fetch('/api/users/sign-in', {
+        method: 'POST',
+        headers: {
+            'Content-Type': "application/json",
+        },
+        body: JSON.stringify(payload)
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then( (response) => {
+        alert(response.message);
+        if ( response.errno === 0 ) {
+            location.href = '/';
+        }
+    })
+    .catch((error) => {
+        console.log(`Error: ${error}`);
+    });
+
+});
+</script>
+<%- include('../partials/footer') -%>

@@ -2,7 +2,48 @@
 <html>
 <head>
 <title>Page Title</title>
-<script language="javascript" src="js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="css/bootstrap.min.css"/>
+<script language="javascript" src="/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/css/bootstrap.min.css"/>
+<style>
+.px-2 {
+    padding-left: .5em
+}
+.px-2 {
+    padding-right: .5em
+}
+
+.py-1 {
+    padding-top: .25em;
+}
+.py-1 {
+    padding-bottom: .25em;
+}
+</style>
 </head>
 <body>
+    <header>
+        <div class="py-1">
+            <div class="px-2 float-start">
+                <a class="text-primary" href="/">HOME</a>
+            </div>
+            <% if ( locals.logined ) { %>
+            <div class="px-2 float-end">
+                <a class="btn btn-danger btn-sm" href="/users/sign-out">Sign Out</a>
+            </div>
+            <div class="px-2 py-1 float-end">
+                <a class="text-primary" href="/users/profile"><%= locals.account %></a>
+            </div>
+            <% } else { %>
+            <div class="px-2 float-end">
+                <a class="btn btn-info btn-sm" href="/users/forget">Forget Password</a>
+            </div>
+            <div class="px-2 float-end">
+                <a class="btn btn-warning btn-sm" href="/users/sign-up">Sing Up</a>
+            </div>
+            <div class="px-2 float-end">
+                <a class="btn btn-success btn-sm" href="/users/sign-in">Sign In</a>
+            </div>
+            <% } %>
+            <div class="clearfix"></div>
+        </div>
+    </header>
