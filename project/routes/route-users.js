@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var middlewares = require('../middlewares/index.js');
+const usersController = require("../controllers/users");
+//var middlewares = require('../middlewares/index.js');
 
 /* GET users listing. */
 /*
@@ -9,34 +10,19 @@ router.get('/', function(req, res, next) {
 });
 */
 router.get('/sign-in', function (req, res, next) {
-    if (req.session.logined) {
-        res.redirect('/users/profile');
-        return;
-    }
-    res.render('users/sign-in', {});
+    usersController.signIn(req, res, next);
 });
 
 router.get('/sign-out', function (req, res, next) {
-    delete req.session.account;
-    delete req.session.logined;
-    res.redirect('/');
+    usersController.signOut(req, res, next);
 });
 
 router.get('/sign-up', function (req, res, next) {
-    if (req.session.logined) {
-        res.redirect('/users/sign-out');
-        return;
-    }
-    res.render('users/sign-up', {});
+    usersController.signUp(req, res, next);
 });
 
 router.get('/profile', function (req, res, next) {
-    // res.send('This is the profile page');
-    if (req.session.logined) {
-        res.locals.account = req.session.account;
-        res.locals.logined = req.session.logined;
-    }
-    res.render('users/profile', {});
+    usersController.profile(req, res, next);
 });
 
 module.exports = router;

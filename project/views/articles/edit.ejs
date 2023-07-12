@@ -1,0 +1,61 @@
+<%- include('../partials/header') -%>
+<div class="container">
+    <div class="col-lg-2 hidden-xs float-start">&nbsp;</div>
+    <div class="col-lg-8 col-xs-12 float-start text-center">
+        <form id="frm-sign-in">
+            <div class="card">
+                <div class="card-header">Create a article</div>
+                <div class="card-body">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Title</span>
+                        <input type="text" name="title" class="form-control" placeholder="title"
+                               value="<%= article.title %>"/>
+                    </div>
+                    <div class="input-group">
+                        <textarea name="content" class="form-control"><%= article.content %></textarea>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <button type="button" class="btn btn-success btn-sm btn-submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<script>
+    const articleId = "<%= article._id %>";
+    let button = document.querySelector('.btn-submit');
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const frm = document.getElementById('frm-sign-in');
+        const formData = new FormData(frm);
+
+        let payload = {};
+
+        for (const [key, value] of formData) {
+            payload[key] = value;
+        }
+
+        fetch('/api/articles/update/' + articleId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': "application/json",
+            },
+            body: JSON.stringify(payload)
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            alert(response.message);
+            if (response.errno === 0) {
+                location.href = '/';
+            }
+        }).catch((error) => {
+            console.log(`Error: ${error}`);
+        });
+
+    });
+</script>
+
+<%- include('../partials/footer') -%>

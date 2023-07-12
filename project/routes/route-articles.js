@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var middlewares = require('middlewares');
+const middlewares = require('../middlewares/index.js');
+const articlesController = require("../controllers/articles");
 
-router.get('/articles/create', middlewares.loginRequired, function(req, res, next) {
-  res.send('This is the create article page');
+router.get('/create', middlewares.loginRequired, function (req, res, next) {
+    articlesController.create(req, res, next);
 });
 
-router.get('/articles/modify/:id', middlewares.loginRequired, function(req, res, next) {
-  res.send('This is the modify article page');
+router.get('/modify/:id', middlewares.loginRequired, function (req, res, next) {
+    articlesController.modify(req, res, next);
 });
 
 module.exports = router;

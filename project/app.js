@@ -29,6 +29,7 @@ app.use(cookieSession({
 
 app.use('/', routers.index);
 app.use('/users', routers.users);
+app.use('/articles', routers.articles);
 app.use('/api', routers.apis);
 
 // catch 404 and forward to error handler
