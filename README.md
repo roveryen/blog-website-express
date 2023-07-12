@@ -1,5 +1,5 @@
 # About
-This is my node.js execrise with node.js, ejs template, express framework, mongodb, mongodb-express. 
+This is my execrise with node.js, ejs template, express framework, mongodb, mongodb-express. 
 With this execrice, I learned some knowledge that like:
 
 1. Build the docker's image with pre-install node.js and express framework.
