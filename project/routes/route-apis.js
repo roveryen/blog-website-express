@@ -20,7 +20,7 @@ router.post('/articles/update/:id', function (req, res, next) {
     articlesController.apiUpdate(req, res, next);
 });
 
-router.post('/articles/delete/:id', function (req, res, next) {
+router.delete('/articles/delete/:id', function (req, res, next) {
     articlesController.apiDelete(req, res, next);
 });
 

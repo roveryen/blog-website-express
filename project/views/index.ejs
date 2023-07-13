@@ -15,9 +15,29 @@
     </div>
 </div>
 <script>
+    function deleteArticle(id, callback) {
+        fetch('/api/articles/delete/' + id, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': "application/json",
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            if (response.errno === 0) {
+                callback && callback(id);
+            } else {
+                alert(response.message);
+            }
+        }).catch((error) => {
+            console.log(`Error: ${error}`);
+        });
+    }
+
     function createArticleBlock(article) {
         let card = document.createElement("div");
         card.setAttribute("class", "card mb-2");
+        card.setAttribute('data-value', article._id);
 
         let date = document.createElement("small");
         date.innerText = article.createdDate.substring(0, 10);
@@ -26,11 +46,40 @@
         title.setAttribute("class", "px-2");
         title.innerText = article.title;
 
+        let linkDelete = document.createElement('a');
+        linkDelete.setAttribute('class', 'text-danger float-end mx-1 btn-delete');
+        linkDelete.setAttribute('data-value', article._id);
+        linkDelete.setAttribute('href', '#');
+        linkDelete.innerText = 'delete';
+        linkDelete.addEventListener('click', function (e){
+            e.preventDefault();
+            const id = e.target.getAttribute('data-value');
+            deleteArticle(id, function (id){
+                const card = document.querySelector('.card[data-value="' + id + '"]');
+                if ( card === null ) {
+                    return false;
+                }
+                const parent = card.parentNode;
+                parent.removeChild(card);
+            });
+        });
+
+        let linkModify = document.createElement('a');
+        linkModify.setAttribute('class', 'text-primary float-end mx-1');
+        linkModify.innerText = 'modify';
+        linkModify.setAttribute('href', 'articles/modify/' + article._id);
+
+        let clearfix = document.createElement('div');
+        clearfix.setAttribute('class', 'clearfix');
 
         let cardHeader = document.createElement("div");
         cardHeader.setAttribute("class", "card-header");
         cardHeader.append(date);
         cardHeader.append(title);
+        cardHeader.append(linkDelete);
+        cardHeader.append(linkModify);
+        cardHeader.append(clearfix);
+
         card.append(cardHeader);
 
         let cardBody = document.createElement("div");
