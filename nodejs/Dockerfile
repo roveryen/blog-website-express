@@ -7,4 +7,4 @@ RUN npm cache clean -f
 RUN npm install -g semver
 RUN npm install -g n
 RUN n stable
-RUN npm install -g express ejs mongoose cookie-parser express-session express-generator
+RUN npm install -g express ejs mysql cors cookie-parser express-session express-generator

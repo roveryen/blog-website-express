@@ -8,39 +8,49 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - nodejs-mongodb
+      - nodejs-mysqldb
     volumes:
-      - ./project:/project
+      - ./project:/project:Z
+    networks:
+      nodejs-bridge:
+        ipv4_address: 174.25.192.101
 
-
-  nodejs-mongodb:
-    image: mongo:latest
-    container_name: nodejs-mongodb
-    restart: always
+  nodejs-mysqldb:
+    image: mariadb
+#    build: ./mariadb/Dockerfile
+    container_name: nodejs-mysqldb
+    expose:
+      - "3306"
+    volumes:
+      - ./db/var/lib/mysql:/var/lib/mysql
+      - ./db/etc/mysql/mariadb.conf.d:/etc/mysql/mariadb.conf.d
     environment:
-#      - MONGO_INITDB_ROOT_USERNAME="admin"
-#      - MONGO_INITDB_ROOT_PASSWORD="password"
-#      - MONGO_INITDB_DATABASE="blog-website"
-      - MONGODB_USER="admin"
-      - MONGODB_PASS="password"
-      - MONGODB_DATABASE="blog-website"
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: true
+    networks:
+      nodejs-bridge:
+        ipv4_address: 174.25.192.132
+
+  nodejs-phpmyadmin:
+    image: phpmyadmin:5.0.2
+    container_name: nodejs-phpmyadmin
     ports:
-      - 27017:27017
-    volumes:
-        - ./mongodb:/data/db
-
-
-  nodejs-mongoadmin:
-    image: mongo-express:latest
-    container_name: nodejs-mongoadmin
+      - "8088:80"
     depends_on:
-      - nodejs-mongodb
-    restart: unless-stopped
-    ports:
-      - 8081:8081
+      - nodejs-mysqldb
     environment:
-      - ME_CONFIG_OPTIONS_EDITORTHEME="ambiance"
-      - ME_CONFIG_MONGODB_DATABASE="blog-website"
-      - ME_CONFIG_MONGODB_ADMINUSERNAME="admin"
-      - ME_CONFIG_MONGODB_ADMINPASSWORD="password"
-      - ME_CONFIG_MONGODB_URL="mongodb://nodejs-mongodb:27017"
+      - PMA_HOSTS=174.25.192.132
+    volumes:
+      - ./phpmyadmin/var/www/html/config.inc.php:/var/www/html/config.inc.php
+    networks:
+      nodejs-bridge:
+        ipv4_address: 174.25.192.199
+
+networks:
+  nodejs-bridge:
+#    external: true
+    driver: bridge
+    name: "nodejs-bridge"
+    ipam:
+      config:
+        - subnet: 174.25.192.0/24
