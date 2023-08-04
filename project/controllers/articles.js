@@ -4,7 +4,9 @@ const Comments = require("../models/comments");
 
 const articlesController = {
     createConnection() {
-        mongoose.connect('mongodb://nodejs-mongodb:27017/blog-website');
+        console.log(process.env["MONGODB_CONNECT_STRING"]);
+        
+        mongoose.connect(process.env['MONGODB_CONNECT_STRING']);
     },
     getCurrentDateTime() {
         const date = new Date();

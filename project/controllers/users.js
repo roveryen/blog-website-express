@@ -3,7 +3,7 @@ const Users = require("../models/users");
 
 const usersController = {
     createConnection() {
-        mongoose.connect('mongodb://nodejs-mongodb:27017/blog-website');
+        mongoose.connect(process.env['MONGODB_CONNECT_STRING']);
     },
     apiSignIn: function (req, res, next) {
         this.createConnection();
