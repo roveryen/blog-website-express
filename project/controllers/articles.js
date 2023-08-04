@@ -1,85 +1,63 @@
-const mongoose = require('mongoose');
-const Articles = require("../models/articles");
-const Comments = require("../models/comments");
+
+const modelArticles = require("../models/articles");
+const modelComments = require("../models/comments");
+
+const Articles = new modelArticles();
+const Comments = new modelComments();
 
 const articlesController = {
-    createConnection() {
-        mongoose.connect('mongodb://nodejs-mongodb:27017/blog-website');
-    },
-    getCurrentDateTime() {
-        const date = new Date();
-        /*
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const seconds = date.getSeconds();
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-         */
-        return date.getTime();
-    },
+    
     apiList: function (req, res, next) {
-        this.createConnection();
-        Articles.find({
-            status: 1
-        }).sort({
-            createdDate: -1
-        }).then((articles) => {
+                
+        Articles.find([
+            ['status','=','1']
+        ], (err, articles) => {
+            if ( err ) {
+                console.log(err);
+                res.status(400).json({
+                    errno: -1,
+                    message: err.message
+                });
+                return;
+            }
 
             res.status(200).json({
                 errno: 0,
                 message: "",
                 articles: articles
             });
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
-            });
         });
+
     },
-    apiUpdate: function (req, res, next) {
-        this.createConnection();
-        Articles.findOne({
-            _id: req.params.id
-        }).then((article) => {
-            try {
-                let message = "Successfully updated"
-                if (article === null) {
-                    article = new Articles();
-                    message = "Successfully created";
-                }
+    apiUpdate: function (req, res, next) {        
 
-                article.title = req.body.title;
-                article.content = req.body.content;
-                article.author = req.session.account;
-                article.updatedDate = this.getCurrentDateTime();
-                article.save();
+        Articles.updateOrCreate({
+            id: req.params.id
+        }, {
+            title: req.body.title,
+            content: req.body.content,
+            author_id: req.session.userId,
+        },  (err, article) => {
 
-                res.status(200).json({
-                    errno: 0,
-                    message: message
-                });
-            } catch (err) {
+            if ( err ) {
                 console.log(err);
                 res.status(400).json({
                     errno: -1,
                     message: err.message
                 });
+                return;
             }
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
+
+            // let message = "Successfully updated";
+            res.status(200).json({
+                errno: 0,
+                message: "Successfully updated"
             });
+                        
         });
     },
     apiDelete: function (req, res, next) {
-        this.createConnection();
+        /*
         Articles.findByIdAndDelete(req.params.id).then((article) => {
             Comments.deleteMany({
                 article_id: article._id
@@ -96,39 +74,39 @@ const articlesController = {
                 message: err.message
             });
         });
+        */
     },
-    detail: function (req, res, next) {
-        this.createConnection();
-        Articles.findOne({
-            _id: req.params.id
-        }).then((article) => {
-
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
-            });
+    detail: function (req, res, next) {        
+        Articles.findById(req.params.id, (err, article) => {
+            if ( err ) {
+                console.log(err);
+                res.status(400).json({
+                    errno: -1,
+                    message: err.message
+                });
+                return;
+            }
         });
     },
     create: function (req, res, next) {
-        const article = new Articles;
+        const article = new modelArticles;
+        article.id = 0;
         res.render("articles/edit", {article: article});
     },
     modify: function (req, res, next) {
-        this.createConnection();
-        Articles.findOne({
-            _id: req.params.id
-        }).then((article) => {
+        
+        Articles.findById(req.params.id, (err, article) => {
+            if ( err ) {
+                console.log(err);
+                res.render("error", {
+                    error: err,
+                    message: err.message
+                });
+                return;
+            }
             res.render("articles/edit", {article: article});
-        }).catch((err) => {
-            console.log(err);
-            res.render("error", {
-                error: err,
-                message: err.message
-            });
         });
-    },
-}
+    }
+};
 
 module.exports = articlesController;

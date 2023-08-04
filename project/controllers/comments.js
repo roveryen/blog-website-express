@@ -1,25 +1,25 @@
-const mongoose = require('mongoose');
+
 const Comments = require("../models/comments");
 
-const articlesController = {
-    createConnection() {
-        mongoose.connect('mongodb://nodejs-mongodb:27017/blog-website');
-    },
+const commentsController = {
     apiList: function (req, res, next) {
-        this.createConnection();
-        Comments.find({
-            article_id: req.params.id
-        }).then((comments) => {
+        
+        Comments.find([
+            ['article_id', '=', req.params.id],
+        ], (err, comments) => {
+            if ( err ) {
+                console.log(err);
+                res.status(400).json({
+                    errno: -1,
+                    message: err.message
+                });
+                return;
+            }
+
             res.status(200).json({
                 errno: 0,
                 message: "",
                 comments: comments
-            });
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
             });
         });
 
@@ -32,4 +32,4 @@ const articlesController = {
     }
 }
 
-module.exports = articlesController;
+module.exports = commentsController;

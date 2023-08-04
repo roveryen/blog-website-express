@@ -1,16 +1,24 @@
-const mongoose = require('mongoose');
-const Users = require("../models/users");
+
+const modelUsers = require("../models/users");
+const Users = new modelUsers;
 
 const usersController = {
-    createConnection() {
-        mongoose.connect('mongodb://nodejs-mongodb:27017/blog-website');
-    },
-    apiSignIn: function (req, res, next) {
-        this.createConnection();
 
-        Users.findOne({
-            account: req.body.account
-        }).then((user) => {
+    apiSignIn: function (req, res, next) {
+        
+        Users.findOne([
+            ['account', '=', req.body.account],
+        ], (err, user) => {
+
+            if ( err ) {
+                console.log(err);
+                res.status(400).json({
+                    errno: -1,
+                    message: err.message
+                });
+                return;
+            }
+            
             if (user === null) {
                 res.status(200)
                     .json({
@@ -32,6 +40,7 @@ const usersController = {
             }
 
             req.session.account = user.account;
+            req.session.userId = user.id;
             req.session.logined = true;
 
             //回傳status:201代表新增成功 並回傳新增的資料
@@ -40,21 +49,24 @@ const usersController = {
                 message: '歡迎回來'
             });
 
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
-            });
-        });
+        });        
+        
     },
     apiSignUp: function (req, res, next) {
-        this.createConnection();
+        
+        Users.findOne([
+            ['account', '=', req.body.account],
+        ], (err, user) => {
+            if ( err ) {
+                console.log(err);
+                res.status(400).json({
+                    errno: -1,
+                    message: err.message
+                });
+                return;
+            }
 
-        Users.findOne({
-            account: req.body.account
-        }).then((check) => {
-            if (check) {
+            if (user) {
                 res.status(200)
                     .json({
                         errno: -1,
@@ -64,33 +76,26 @@ const usersController = {
                 return;
             }
 
-            const user = new Users({
+            Users.create({
                 account: req.body.account,
                 password: req.body.password
-            });
-
-            try {
-                //使用.save()將資料存進資料庫
-                user.save();
+            }, (err, user) => {
+                if ( err ) {
+                    //錯誤訊息發生回傳400 代表使用者傳入錯誤的資訊
+                    res.status(400).json({
+                        errno: -1,
+                        message: err.message
+                    });
+                    return;
+                }
 
                 //回傳status:201代表新增成功 並回傳新增的資料
                 res.status(200).json({
                     errno: 0,
                     message: '新增成功'
                 });
-            } catch (err) {
-                //錯誤訊息發生回傳400 代表使用者傳入錯誤的資訊
-                res.status(400).json({
-                    errno: -1,
-                    message: err.message
-                });
-            }
-        }).catch((err) => {
-            console.log(err);
-            res.status(400).json({
-                errno: -1,
-                message: err.message
             });
+
         });
 
         //res.send('This is the sign-in funciton');
@@ -111,6 +116,7 @@ const usersController = {
     },
     signOut: function (req, res, next) {
         delete req.session.account;
+        delete req.session.userId;
         delete req.session.logined;
         res.redirect('/');
     },
@@ -118,6 +124,7 @@ const usersController = {
         // res.send('This is the profile page');
         if (req.session.logined) {
             res.locals.account = req.session.account;
+            res.locals.userId = req.session.userId;
             res.locals.logined = req.session.logined;
         }
         res.render('users/profile', {});

@@ -37,10 +37,10 @@
     function createArticleBlock(article) {
         let card = document.createElement("div");
         card.setAttribute("class", "card mb-2");
-        card.setAttribute('data-value', article._id);
+        card.setAttribute('data-value', article.id);
 
         let date = document.createElement("small");
-        date.innerText = article.createdDate.substring(0, 10);
+        date.innerText = article.created_at.substring(0, 10);
 
         let title = document.createElement("strong");
         title.setAttribute("class", "px-2");
@@ -48,7 +48,7 @@
 
         let linkDelete = document.createElement('a');
         linkDelete.setAttribute('class', 'text-danger float-end mx-1 btn-delete');
-        linkDelete.setAttribute('data-value', article._id);
+        linkDelete.setAttribute('data-value', article.id);
         linkDelete.setAttribute('href', '#');
         linkDelete.innerText = 'delete';
         linkDelete.addEventListener('click', function (e){
@@ -67,7 +67,7 @@
         let linkModify = document.createElement('a');
         linkModify.setAttribute('class', 'text-primary float-end mx-1');
         linkModify.innerText = 'modify';
-        linkModify.setAttribute('href', 'articles/modify/' + article._id);
+        linkModify.setAttribute('href', 'articles/modify/' + article.id);
 
         let clearfix = document.createElement('div');
         clearfix.setAttribute('class', 'clearfix');
@@ -93,6 +93,7 @@
     (function () {
         const list = document.getElementById('article-list');
         if (list === null) {
+            console.log('cannot found #article-list');
             return false;
         }
 
